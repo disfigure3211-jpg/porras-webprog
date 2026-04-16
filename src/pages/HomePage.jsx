@@ -87,7 +87,7 @@ const HomePage = () => {
                 <div className="mb-4 h-24 rounded-lg bg-slate-100"></div>
                 <h3 className="mb-3 text-lg font-bold text-gray-900">{feature.title}</h3>
                 <p className="mb-4 text-sm text-gray-700">{feature.description}</p>
-                <Button variant="secondary" className="text-xs">Read More</Button>
+                <Button to="/notfound" variant="secondary" className="text-xs">Read More</Button>
               </div>
             ))}
           </div>

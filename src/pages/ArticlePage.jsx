@@ -1,109 +1,106 @@
+import { useParams } from 'react-router-dom';
 import Button from '../components/Button';
+import articles from '../assets/article-content.js';
 
-const ArticlePage = () => {
-  const articles = [
-    {
-      title: 'The Art of Cero',
-      category: 'TECHNIQUE',
-      description: 'A comprehensive guide to understanding Grimmjow\'s devastating Cero techniques and their destructive potential in combat.',
-    },
-    {
-      title: 'Unmatched Speed',
-      category: 'ANALYSIS',
-      description: 'Analyzing the speed feats that made Grimmjow one of the most formidable combatants in the Bleach universe.',
-    },
-    {
-      title: 'Resurrection Power',
-      category: 'ABILITY',
-      description: 'Exploring the transformation and power amplification of Grimmjow\'s Pantera resurrection form.',
-    },
-    {
-      title: 'Legendary Battles',
-      category: 'HISTORY',
-      description: 'In-depth breakdown of Grimmjow\'s most iconic battles and tactical strategies throughout his journey.',
-    },
-  ];
+function ArticlePage() {
+  const { name } = useParams();
+  const article = articles.find((article) => article.name === name);
 
-  const deepDives = [
-    {
-      title: 'The Espada System',
-      category: 'HIERARCHY',
-      description: 'Understanding the rankings and power structure that positioned Grimmjow as the 6th most powerful Arrancar.',
-    },
-    {
-      title: 'Path to Strength',
-      category: 'EVOLUTION',
-      description: 'Tracing Grimmjow\'s evolution from a hollow to becoming one of the most fearsome Captains of Arrancar forces.',
-    },
-  ];
+  if (!article) {
+    return (
+      <div className="flex w-full flex-col gap-6">
+        <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            <h1 className="text-3xl font-bold text-zinc-900">Article not found</h1>
+            <Button to="/articles" className="mt-6">Back to Articles</Button>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex w-full flex-col gap-0 bg-white">
-      {/* Hero Section */}
-      <section className="border-y-2 border-gray-900 px-6 py-12 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
-          <p className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-600">
-            Knowledge Base
+    <div className="flex w-full flex-col gap-6">
+      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-4">
+            <Button to="/articles">Back to Articles</Button>
+          </div>
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Article
           </p>
-          <h1 className="mb-6 text-4xl font-bold leading-tight text-gray-900 sm:text-5xl">
-            Grimmjow's Battle Chronicles
+          <h1 className="text-3xl font-bold leading-tight text-zinc-900 sm:text-4xl">
+            {article.title}
           </h1>
-          <p className="mb-8 max-w-3xl text-base leading-7 text-gray-700">
-            Explore in-depth articles about legendary battles, ability analysis, character development, and the power hierarchy of Hueco Mundo.
+          <p className="mt-2 text-sm text-zinc-500">
+            {article.name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
           </p>
-          <Button to="/" variant="primary">Return Home</Button>
         </div>
       </section>
 
-      {/* Featured Articles */}
-      <section className="border-y-2 border-gray-900 px-6 py-12 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
-          <p className="mb-6 text-xs font-bold uppercase tracking-wider text-gray-600">
-            Featured Articles
-          </p>
-          <h2 className="mb-8 text-3xl font-bold text-gray-900">Community Insights</h2>
+      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] border-2 border-zinc-900 bg-zinc-200 mb-8">
+            <div className="h-24 w-24 border-2 border-zinc-300 bg-zinc-100" />
+          </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {articles.map((article, idx) => (
-              <div key={idx} className="rounded-2xl border-2 border-gray-900 bg-gray-50 p-6">
-                <div className="mb-4 h-24 rounded-lg border-2 border-dashed border-gray-400 bg-gray-100"></div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-600">
-                  {article.category}
-                </p>
-                <h3 className="mb-3 text-lg font-bold text-gray-900">{article.title}</h3>
-                <p className="mb-4 text-sm text-gray-700">{article.description}</p>
-                <Button variant="secondary" className="text-xs">Read More</Button>
-              </div>
+          <div className="prose prose-sm max-w-none space-y-4 text-zinc-700">
+            {article.content.map((paragraph, index) => (
+              <p key={index} className="text-base leading-7 text-zinc-700 whitespace-pre-wrap">
+                {paragraph}
+              </p>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Deep Dives */}
-      <section className="border-y-2 border-gray-900 px-6 py-12 sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl">
-          <p className="mb-6 text-xs font-bold uppercase tracking-wider text-gray-600">
-            Extended Analysis
-          </p>
-          <h2 className="mb-8 text-3xl font-bold text-gray-900">Deep Dives</h2>
+          <div className="mt-10 rounded-[1.5rem] border-2 border-zinc-900 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                Grimmjow's Notable Fights
+              </p>
+              <h2 className="mt-2 text-2xl font-bold text-zinc-900">Legendary battles worth revisiting</h2>
+            </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {deepDives.map((dive, idx) => (
-              <div key={idx} className="rounded-2xl border-2 border-gray-900 bg-gray-50 p-8">
-                <div className="mb-4 h-32 rounded-lg border-2 border-dashed border-gray-400 bg-gray-100"></div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-600">
-                  {dive.category}
-                </p>
-                <h3 className="mb-3 text-2xl font-bold text-gray-900">{dive.title}</h3>
-                <p className="mb-6 text-sm text-gray-700">{dive.description}</p>
-                <Button variant="secondary" className="text-xs">Explore</Button>
-              </div>
-            ))}
+            <div className="grid gap-4 md:grid-cols-2">
+              {[
+                {
+                  fight: 'Ichigo Kurosaki',
+                  highlight: 'Soul Society showdown',
+                  details: 'A brutal clash of speed and spirit energy that defined Grimmjow’s rivalry with Ichigo.',
+                },
+                {
+                  fight: 'Kenpachi Zaraki',
+                  highlight: 'Raw power collision',
+                  details: 'A devastating fight where Grimmjow tested his limits against Kenpachi’s overwhelming strength.',
+                },
+                {
+                  fight: 'Nnoitra Gilga',
+                  highlight: 'Arrancar supremacy',
+                  details: 'A tactical duel in Hueco Mundo that showed Grimmjow’s cunning and ferocity in battle.',
+                },
+                {
+                  fight: 'Ulquiorra Schiffer',
+                  highlight: 'Pantera vs. Segunda',
+                  details: 'A high-stakes encounter highlighting Grimmjow’s resilience and explosive Cero techniques.',
+                },
+              ].map((item, index) => (
+                <div key={index} className="rounded-3xl border border-zinc-200 bg-zinc-50 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                    {item.highlight}
+                  </p>
+                  <h3 className="mt-2 text-lg font-bold text-zinc-900">{item.fight}</h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-700">{item.details}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 border-t-2 border-zinc-900 pt-6">
+            <Button to="/articles">Back to Articles</Button>
           </div>
         </div>
       </section>
     </div>
   );
-};
+}
 
 export default ArticlePage;
