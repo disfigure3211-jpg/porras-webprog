@@ -28,7 +28,7 @@ const NavBar = () => {
           <span className="text-lg font-bold tracking-widest text-cyan-200">GRIMMJOW</span>
         </NavLink>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -39,6 +39,19 @@ const NavBar = () => {
               {link.label}
             </NavLink>
           ))}
+
+          <NavLink
+            to="/auth/signin"
+            className="rounded-full border border-cyan-500/40 bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300 transition hover:bg-cyan-500 hover:text-slate-950"
+          >
+            Sign In
+          </NavLink>
+          <NavLink
+            to="/auth/signup"
+            className="rounded-full bg-cyan-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-950 transition hover:bg-cyan-400"
+          >
+            Sign Up
+          </NavLink>
         </div>
       </nav>
     </header>
