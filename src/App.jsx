@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import AuthLayout from './layouts/AuthLayout';
 import SignInPage from './pages/AuthPages/SignInPage';
 import SignUpPage from './pages/AuthPages/SignUpPage';
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFoundPage from './pages/NotFoundPage';
 
