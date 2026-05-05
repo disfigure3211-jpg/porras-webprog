@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Attendance Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0ede8;
+      --card: #ffffff;
+      --border: #d8d3cc;
+      --text: #1a1714;
+      --muted: #7a746e;
+      --accent: #2d6a4f;
+      --accent-light: #e8f5ee;
+      --absent: #b5451b;
+      --absent-light: #fdf0ec;
+      --neutral: #4a6fa5;
+      --neutral-light: #eef3fa;
+      --remove: #c0392b;
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 3rem 1rem;
+      color: var(--text);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+    }
+
+    header {
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    input[type="text"]::placeholder { color: #bbb; }
+
+    .btn-add {
+      padding: 0.75rem 1.3rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover { background: #1e4d38; }
+    .btn-add:active { transform: scale(0.97); }
+
+    #student-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .student-item {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: var(--shadow);
+      transition: border-color 0.25s, background 0.25s;
+      animation: slideIn 0.25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .student-item.present {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .student-item.absent {
+      border-color: var(--absent);
+      background: var(--absent-light);
+    }
+
+    .student-name {
+      font-size: 0.97rem;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .status-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 0.5rem;
+    }
+
+    .status-tag.present { color: var(--accent); background: #c4efd7; }
+    .status-tag.absent  { color: var(--absent); background: #f9c9bb; }
+
+    .btn-group {
+      display: flex;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .btn-present, .btn-absent, .btn-remove {
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn-present { background: var(--neutral); color: #fff; }
+    .btn-absent  { background: #e67e22; color: #fff; }
+    .btn-remove  { background: var(--remove); color: #fff; }
+
+    .btn-present:hover, .btn-absent:hover, .btn-remove:hover { opacity: 0.85; }
+    .btn-present:active, .btn-absent:active, .btn-remove:active { transform: scale(0.96); }
+
+    .empty-msg {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 2rem 0;
+      font-style: italic;
+    }
+
+    .alert-box {
+      display: none;
+      background: #fff3cd;
+      border: 1.5px solid #f0ad4e;
+      color: #856404;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+      animation: slideIn 0.2s ease;
+    }
+
+    .alert-box.show { display: block; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Student Attendance Tracker</h1>
+      <p>Add students, mark attendance, and remove entries.</p>
+    </header>
+
+    <div class="input-row">
+      <input type="text" id="student-input" placeholder="Enter student name..." />
+      <button class="btn-add" id="add-btn">Add Student</button>
+    </div>
+
+    <div class="alert-box" id="alert-box">⚠ Please enter a student name.</div>
+
+    <ul id="student-list">
+      <li class="empty-msg" id="empty-msg">No students added yet.</li>
+    </ul>
+  </main>
+
+  <script>
+
+    class Student {
+      constructor(name) {
+        this.name = name;
+        this.isPresent = null;
+      }
+    }
+
+    const students = [];
+
+    const input     = document.getElementById('student-input');
+    const addBtn    = document.getElementById('add-btn');
+    const list      = document.getElementById('student-list');
+    const emptyMsg  = document.getElementById('empty-msg');
+    const alertBox  = document.getElementById('alert-box');
+
+    function showAlert(msg) {
+      alertBox.textContent = '⚠ ' + msg;
+      alertBox.classList.add('show');
+      setTimeout(() => alertBox.classList.remove('show'), 2500);
+    }
+
+    function updateEmptyMsg() {
+      emptyMsg.style.display = students.length === 0 ? 'block' : 'none';
+    }
+
+    function renderStudent(student, index) {
+      const li = document.createElement('li');
+      li.classList.add('student-item');
+      if (student.isPresent === true)  li.classList.add('present');
+      if (student.isPresent === false) li.classList.add('absent');
+      li.dataset.index = index;
+
+      let statusTag = '';
+      if (student.isPresent === true)  statusTag = '<span class="status-tag present">Present</span>';
+      if (student.isPresent === false) statusTag = '<span class="status-tag absent">Absent</span>';
+
+      li.innerHTML = `
+        <span class="student-name">${student.name}${statusTag}</span>
+        <div class="btn-group">
+          <button class="btn-present">Mark Present</button>
+          <button class="btn-absent">Mark Absent</button>
+          <button class="btn-remove">Remove</button>
+        </div>
+      `;
+
+      li.querySelector('.btn-present').addEventListener('click', () => {
+        students[index].isPresent = true;
+        console.log('Marked Present:', students[index]);
+        renderList();
+      });
+
+      li.querySelector('.btn-absent').addEventListener('click', () => {
+        students[index].isPresent = false;
+        console.log('Marked Absent:', students[index]);
+        renderList();
+      });
+
+      li.querySelector('.btn-remove').addEventListener('click', () => {
+        console.log('Removed:', students[index]);
+        students.splice(index, 1);
+        renderList();
+      });
+
+      return li;
+    }
+
+    function renderList() {
+  
+      Array.from(list.querySelectorAll('.student-item')).forEach(el => el.remove());
+
+      students.forEach((student, i) => {
+        list.appendChild(renderStudent(student, i));
+      });
+
+      updateEmptyMsg();
+    }
+
+    function addStudent() {
+      const name = input.value.trim();
+      if (!name) {
+        showAlert('Please enter a student name.');
+        return;
+      }
+
+      const student = new Student(name);
+      students.push(student);
+      console.log('Added Student:', student);
+
+      input.value = '';
+      renderList();
+    }
+
+    addBtn.addEventListener('click', addStudent);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addStudent();
+    });
+
+    renderList();
+  </script>
+</body>
+</html>
