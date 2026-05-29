@@ -1,4 +1,5 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { text: 'Dashboard', to: '/dashboard' },
@@ -6,8 +7,17 @@ const navItems = [
   { text: 'Users', to: '/dashboard/users' },
 ];
 
+const quickNavItems = [
+  { text: 'About', to: '/about' },
+  { text: 'Articles', to: '/articles' },
+  { text: 'Reports', to: '/dashboard/reports' },
+  { text: 'Users', to: '/dashboard/users' },
+];
+
 const DashLayout = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const pageTitle = navItems.find((item) => location.pathname.startsWith(item.to))?.text || 'Dashboard';
 
   return (
@@ -31,13 +41,38 @@ const DashLayout = () => {
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white shadow-lg animate-slide-down">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="relative h-10 w-10">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg" />
-              <div className="absolute inset-1 rounded-2xl bg-gradient-to-br from-cyan-300 to-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-cyan-300 font-semibold">Admin panel</p>
-              <h1 className="text-lg font-bold tracking-tight">{pageTitle}</h1>
+            <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-500/30" />
+            <div className="relative">
+              <div className="flex items-center gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-cyan-300 font-semibold">Admin panel</p>
+                  <h1 className="text-lg font-bold tracking-tight">{pageTitle}</h1>
+                </div>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen((open) => !open)}
+                    className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-slate-900/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-100 shadow-sm transition hover:border-cyan-300 hover:bg-slate-800"
+                  >
+                    Pages
+                    <span className="text-cyan-200">▾</span>
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute left-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-3xl border border-slate-700 bg-slate-950/95 shadow-2xl shadow-slate-950/30 backdrop-blur">
+                      {quickNavItems.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          className="block px-4 py-3 text-sm text-slate-100 transition hover:bg-slate-900 hover:text-white"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {item.text}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -47,12 +82,13 @@ const DashLayout = () => {
               placeholder="Search..."
               className="w-full max-w-xs rounded-full border border-slate-600 bg-slate-800 px-4 py-2 text-sm text-slate-100 outline-none transition-all duration-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 hover:border-slate-500"
             />
-            <Link
-              to="/auth/signin"
+            <button
+              type="button"
+              onClick={() => navigate('/')}
               className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-lg transition-all duration-300 hover:shadow-cyan-500/50 hover:shadow-2xl hover:-translate-y-0.5 active:translate-y-0"
             >
               Logout
-            </Link>
+            </button>
           </div>
         </div>
       </header>

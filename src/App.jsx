@@ -9,8 +9,11 @@ import AuthLayout from './layouts/AuthLayout';
 import SignInPage from './pages/AuthPages/SignInPage';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import NotFoundPage from './pages/NotFoundPage';
+import DashLayout from './layouts/DashLayout';
+import ReportsPage from './pages/DashboardPages/ReportsPage';
+import UsersPage from './pages/DashboardPages/UsersPage';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +44,24 @@ const router = createBrowserRouter([
       {
         path: 'notfound',
         element: <NotFoundPage />,
+      },
+    ],
+  },
+  {
+    path: 'dashboard',
+    element: <DashLayout />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="users" replace />,
+      },
+      {
+        path: 'reports',
+        element: <ReportsPage />,
+      },
+      {
+        path: 'users',
+        element: <UsersPage />,
       },
     ],
   },

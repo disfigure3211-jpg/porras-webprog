@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import grimmjowLogo from '../assets/grimmjow.jpg';
 
 const links = [
@@ -16,6 +16,9 @@ const navLinkClassName = ({ isActive }) =>
   ].join(' ');
 
 const NavBar = () => {
+  const location = useLocation();
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
+
   return (
     <header className="border-b-2 border-slate-800 bg-[#0b1524] text-white shadow-md">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
