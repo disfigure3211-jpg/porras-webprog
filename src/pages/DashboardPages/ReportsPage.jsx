@@ -164,7 +164,7 @@ const ReportsPage = () => {
                   width={680}
                   height={320}
                   series={barSeries}
-                  xAxis={[{ id: 'x', data: reportBarData.map((item) => item.quarter), scaleType: 'point', position: 'bottom' }]}
+                  xAxis={[{ id: 'x', data: reportBarData.map((item) => item.quarter), scaleType: 'band', position: 'bottom' }]}
                   yAxis={[{ id: 'y', position: 'left', label: 'Units' }]}
                   tooltip={{ visible: true }}
                   legend={{ position: 'bottom' }}

@@ -1,13 +1,47 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
+import { TextField, Alert, Stack } from '@mui/material';
+import { loginUser } from '../../services/UserService';
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const [formState, setFormState] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate('/dashboard/users');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await loginUser({
+        email: formState.email,
+        password: formState.password,
+      });
+      const data = response.data;
+
+      if (data.type === 'viewer') {
+        setError('Viewers are not allowed to log in.');
+        setIsLoading(false);
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('type', data.type);
+      localStorage.setItem('firstName', data.firstName);
+      navigate('/dashboard/users');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Unable to sign in.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -19,25 +53,33 @@ const SignInPage = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <label className="block space-y-2 text-sm text-slate-300">
-          <span>Email</span>
-          <input
+        {error ? <Alert severity="error">{error}</Alert> : null}
+        <Stack spacing={3}>
+          <TextField
+            name="email"
             type="email"
+            label="Email"
+            value={formState.email}
+            onChange={handleInputChange}
             required
-            placeholder="you@example.com"
-            className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+            fullWidth
+            InputLabelProps={{ style: { color: '#94a3b8' } }}
+            inputProps={{ style: { color: '#e2e8f0' } }}
+            sx={{ bgcolor: '#0f172a', borderRadius: '24px' }}
           />
-        </label>
-
-        <label className="block space-y-2 text-sm text-slate-300">
-          <span>Password</span>
-          <input
+          <TextField
+            name="password"
             type="password"
+            label="Password"
+            value={formState.password}
+            onChange={handleInputChange}
             required
-            placeholder="Enter your password"
-            className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+            fullWidth
+            InputLabelProps={{ style: { color: '#94a3b8' } }}
+            inputProps={{ style: { color: '#e2e8f0' } }}
+            sx={{ bgcolor: '#0f172a', borderRadius: '24px' }}
           />
-        </label>
+        </Stack>
 
         <div className="flex items-center justify-between gap-4 text-sm text-slate-400">
           <label className="inline-flex items-center gap-2">
@@ -50,8 +92,8 @@ const SignInPage = () => {
         </div>
 
         <div className="space-y-3">
-          <Button type="submit" variant="primary" className="w-full py-3">
-            Enter the Gate
+          <Button type="submit" variant="primary" className="w-full py-3" disabled={isLoading}>
+            {isLoading ? 'Signing in...' : 'Enter the Gate'}
           </Button>
           <Button variant="secondary" className="w-full py-3">
             Continue with Google

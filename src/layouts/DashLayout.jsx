@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-const navItems = [
+const defaultNavItems = [
   { text: 'Dashboard', to: '/dashboard' },
   { text: 'Reports', to: '/dashboard/reports' },
   { text: 'Users', to: '/dashboard/users' },
+  { text: 'Articles', to: '/dashboard/articles' },
 ];
 
 const quickNavItems = [
@@ -18,6 +19,29 @@ const DashLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const userType = typeof window !== 'undefined' ? localStorage.getItem('type') : null;
+
+  useEffect(() => {
+    if (!userType) {
+      navigate('/auth/signin', { replace: true });
+      return;
+    }
+
+    if (location.pathname === '/dashboard/users' && userType === 'editor') {
+      navigate('/dashboard/reports', { replace: true });
+    }
+
+    if (location.pathname === '/dashboard/articles' && userType !== 'admin') {
+      navigate('/dashboard/reports', { replace: true });
+    }
+  }, [location.pathname, navigate, userType]);
+
+  const navItems = defaultNavItems.filter((item) => {
+    if (userType === 'editor' && item.to === '/dashboard/users') return false;
+    if (userType !== 'admin' && item.to === '/dashboard/articles') return false;
+    return true;
+  });
+
   const pageTitle = navItems.find((item) => location.pathname.startsWith(item.to))?.text || 'Dashboard';
 
   return (
@@ -84,7 +108,12 @@ const DashLayout = () => {
             />
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('type');
+                localStorage.removeItem('firstName');
+                navigate('/auth/signin');
+              }}
               className="rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-lg transition-all duration-300 hover:shadow-cyan-500/50 hover:shadow-2xl hover:-translate-y-0.5 active:translate-y-0"
             >
               Logout

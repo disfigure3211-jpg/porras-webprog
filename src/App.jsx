@@ -10,10 +10,26 @@ import SignInPage from './pages/AuthPages/SignInPage';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import ErrorBoundary from './ErrorBoundary';
 import NotFoundPage from './pages/NotFoundPage';
 import DashLayout from './layouts/DashLayout';
 import ReportsPage from './pages/DashboardPages/ReportsPage';
 import UsersPage from './pages/DashboardPages/UsersPage';
+import DashArticleListPage from './pages/DashboardPages/DashArticleListPage';
+
+const DashboardIndex = () => {
+  const userType = typeof window !== 'undefined' ? localStorage.getItem('type') : null;
+
+  if (!userType) {
+    return <Navigate to="/auth/signin" replace />;
+  }
+
+  if (userType === 'editor') {
+    return <Navigate to="reports" replace />;
+  }
+
+  return <Navigate to="users" replace />;
+};
 
 const router = createBrowserRouter([
   {
@@ -53,7 +69,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="users" replace />,
+        element: <DashboardIndex />,
       },
       {
         path: 'reports',
@@ -62,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: 'users',
         element: <UsersPage />,
+      },
+      {
+        path: 'articles',
+        element: <DashArticleListPage />,
       },
     ],
   },
@@ -87,9 +107,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <RouterProvider router={router} />
-    </>
+    </ErrorBoundary>
   );
 }
 
