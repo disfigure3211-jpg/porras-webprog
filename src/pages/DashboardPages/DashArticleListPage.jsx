@@ -37,10 +37,26 @@ const DashArticleListPage = () => {
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
 
+  const normalizeParagraphs = (paragraphs) => {
+    if (Array.isArray(paragraphs)) return paragraphs;
+    if (typeof paragraphs === 'string') {
+      return paragraphs
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line);
+    }
+    return [];
+  };
+
   const loadArticles = async () => {
     try {
       const response = await fetchArticles();
-      setArticles(response.data || []);
+      setArticles(
+        (response.data || []).map((article) => ({
+          ...article,
+          paragraphs: normalizeParagraphs(article.paragraphs),
+        }))
+      );
     } catch (err) {
       setError('Unable to load articles.');
     }
@@ -70,7 +86,7 @@ const DashArticleListPage = () => {
     setFormState({
       slug: article.slug,
       title: article.title,
-      paragraphs: article.paragraphs.join('\n'),
+      paragraphs: (article.paragraphs || []).join('\n'),
       status: article.status,
     });
     setError('');
@@ -142,7 +158,7 @@ const DashArticleListPage = () => {
       field: 'paragraphs',
       headerName: 'Paragraphs',
       width: 140,
-      valueGetter: (params) => params.row.paragraphs?.length || 0,
+      valueGetter: (params) => params?.row?.paragraphs?.length || 0,
     },
     {
       field: 'preview',
@@ -151,7 +167,7 @@ const DashArticleListPage = () => {
       minWidth: 240,
       sortable: false,
       renderCell: (params) => {
-        const preview = params.row.paragraphs?.[0] || '';
+        const preview = params?.row?.paragraphs?.[0] || '';
         return <span>{preview.length > 100 ? `${preview.slice(0, 100)}...` : preview}</span>;
       },
     },
